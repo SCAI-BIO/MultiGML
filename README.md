@@ -39,6 +39,12 @@ $ cd MultiGML
 $ python3 -m pip install -e .
 ```
 
+The file protein_embeddings_esm.tsv.zip was too large to push to GitHub, and therefore was split into segments (protein_embeddings_esm_*). In order to run the code, you need to merge these files together:
+```
+$ cat protein_embeddings_esm_* > protein_embeddings_esm.tsv.zip
+```
+
+
 ## Documentation
 Read the [official docs]() for more information.
 
