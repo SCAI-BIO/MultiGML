@@ -1,4 +1,5 @@
-MultiGML: Multimodal Graph Machine Learning for Prediction of Adverse Drug Events
+
+# MultiGML: Multimodal Graph Machine Learning for Prediction of Adverse Drug Events
 
 
 ## Table of contents
@@ -39,14 +40,12 @@ $ cd MultiGML
 $ python3 -m pip install -e .
 ```
 
-The file protein_embeddings_esm.tsv.zip was too large to push to GitHub, and therefore was split into segments (protein_embeddings_esm_*). In order to run the code, you need to merge these files together:
+The file data/features/full_features/ protein_embeddings_esm.tsv.zip was too large to push to GitHub, and therefore was split into segments (protein_embeddings_esm_*). In order to run the code, you need to merge these files together:
 ```
 $ cat protein_embeddings_esm_* > protein_embeddings_esm.tsv.zip
 ```
 
 
-## Documentation
-Read the [official docs]() for more information.
 
 ## Input data formats
 
@@ -67,7 +66,6 @@ the source and destination node, their relation and the source database:
 | relation_type     | Type of the edge.                             | drug-protein     |
 | source_database   | Database the edge information was taken from. | DRUGBANK         |
 
-**Note:** The data must be in a tab separated file format & if your knowledge graph does not have relations between the source and the target, just populate the relation column with "No Relation".
 
 ### Features
 
@@ -96,7 +94,7 @@ The following files are listed in the [features](data/features/full_features/) d
 
 
 ## Usage
-**Note:** These are very basic commands for MultiGML, and the detailed options for each command can be found in the [documentation](#documentation)
+**Note:** These are very basic commands for MultiGML, and the detailed options for each command can be found in the documentation.
 
 
 1. **Hyperparameter Optimization**
