@@ -1,1 +1,0 @@
-{"0": {"best_trial_number": 42, "batch_size": 100, "dropout": 0.0, "dropout_multimodal": 0.4, "drug_modality": 5, "epsilon": 5.846248740082477e-07, "factor": 26, "h_dim": 280, "h_out": 60, "input_dim": 390, "learning_rate": 0.0002830513810700744, "num_hidden_layers": 3, "protein_modality": 1, "weight_decay": 6}}

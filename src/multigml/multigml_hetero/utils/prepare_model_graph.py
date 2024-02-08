@@ -86,7 +86,7 @@ def create_heterograph(
     Returns:
         heterograph (Heterograph): The heterograph.
     """
-    graph_file = choose_graph_file(which_graph=which_graph)
+    graph_file = choose_graph_file(which_graph=which_graph, graph_file=graph_file)
 
     feature_file_list, feature_name_list, feature_node_type_list = choose_features(
         which_graph=which_graph,
@@ -296,10 +296,15 @@ def get_modality_combinations(feature_dict):
 
     return combinations
 
-def choose_graph_file(which_graph: str,):
+def choose_graph_file(which_graph: str, graph_file: str):
     # select graph file
     if which_graph == 'complete':
         graph_file = CONDITION_GRAPH_FILE
+    elif which_graph == 'custom':
+        if graph_file != None:
+            graph_file = graph_file
+        else:
+            raise Exception("The argument `which_graph='custom'` is selected, but no graph path is given via `graph_path`.")
     else:
         raise Exception("Please select one of the graphs: 'complete'")
     return graph_file
@@ -315,41 +320,64 @@ def choose_features(
     """Choose the graph features depending on the given parameters."""
     # select features
     # for the hyperparameter optimization, where different combinations of modalities are being tested
-
-    if which_features == 'random':
-        feature_file_list = [
-            RANDOM_DRUG_FEATURE_FILE,
-            RANDOM_PROTEIN_FEATURE_FILE,
-            RANDOM_DISEASE_FEATURE_FILE,
-        ]
-        feature_name_list = [
-            FEATURE_FILE_DRUG_RANDOM_NAME,
-            FEATURE_FILE_PROTEIN_RANDOM_NAME,
-            FEATURE_FILE_DISEASE_RANDOM_NAME,
-        ]
-        feature_node_type_list = [DRUG, PROTEIN, CONDITION]
-
-    elif which_features == 'full':
-        feature_file_list = [
-            FULL_DRUG_COUNT_FCFP_FILE,
-            FULL_DRUG_CYTOLOGICAL_FILE,
-            FULL_LINCS_DRUG_FC_FILE,
-            FULL_ESM_PROT_EMBEDDINGS,
-            FULL_PROTEIN_GENE_ONTOLOGY_FINGERPRINT,
-            FULL_CUI2VEC_DISGENET_FILE,
-        ]
-        feature_name_list = [
-            FEATURE_FILE_DRUG_FCFP_NAME,
-            FEATURE_FILE_DRUG_CYT_NAME,
-            FEATURE_FILE_DRUG_FC_NAME,
-            FEATURE_FILE_PROTEIN_ESM_NAME,
-            FEATURE_FILE_PROTEIN_GO_NAME,
-            FEATURE_FILE_DISEASE_CUI2VEC_NAME,
-        ]
-        feature_node_type_list = [DRUG, DRUG, DRUG, PROTEIN, PROTEIN, CONDITION]
+    
+    if which_graph == 'custom':
+        if which_features != None:
+            feature_file_list = [
+                os.path.join(which_features, 'drugbank_count_fcfp.tsv'),
+                os.path.join(which_features, 'lincs_cytological_profiling_drug_features.tsv'),
+                os.path.join(which_features, 'lincs_drug_fc.tsv'),
+                os.path.join(which_features, 'protein_embeddings_esm.tsv'),
+                os.path.join(which_features, 'protein_go_fingerprint.tsv'),
+                os.path.join(which_features, 'cui2vec_disgenet.tsv'),
+            ]
+            feature_name_list = [
+                FEATURE_FILE_DRUG_FCFP_NAME,
+                FEATURE_FILE_DRUG_CYT_NAME,
+                FEATURE_FILE_DRUG_FC_NAME,
+                FEATURE_FILE_PROTEIN_ESM_NAME,
+                FEATURE_FILE_PROTEIN_GO_NAME,
+                FEATURE_FILE_DISEASE_CUI2VEC_NAME,
+            ]
+            feature_node_type_list = [DRUG, DRUG, DRUG, PROTEIN, PROTEIN, CONDITION] 
+        else:
+            raise Exception("You specified a custom graph, but did not provide custom graph features folder path via `which_features`.")
 
     else:
-        raise Exception("Please select one of the following feature types: 'full', 'random'.")
+        if which_features == 'random':
+            feature_file_list = [
+                RANDOM_DRUG_FEATURE_FILE,
+                RANDOM_PROTEIN_FEATURE_FILE,
+                RANDOM_DISEASE_FEATURE_FILE,
+            ]
+            feature_name_list = [
+                FEATURE_FILE_DRUG_RANDOM_NAME,
+                FEATURE_FILE_PROTEIN_RANDOM_NAME,
+                FEATURE_FILE_DISEASE_RANDOM_NAME,
+            ]
+            feature_node_type_list = [DRUG, PROTEIN, CONDITION]
+
+        elif which_features == 'full':
+            feature_file_list = [
+                FULL_DRUG_COUNT_FCFP_FILE,
+                FULL_DRUG_CYTOLOGICAL_FILE,
+                FULL_LINCS_DRUG_FC_FILE,
+                FULL_ESM_PROT_EMBEDDINGS,
+                FULL_PROTEIN_GENE_ONTOLOGY_FINGERPRINT,
+                FULL_CUI2VEC_DISGENET_FILE,
+            ]
+            feature_name_list = [
+                FEATURE_FILE_DRUG_FCFP_NAME,
+                FEATURE_FILE_DRUG_CYT_NAME,
+                FEATURE_FILE_DRUG_FC_NAME,
+                FEATURE_FILE_PROTEIN_ESM_NAME,
+                FEATURE_FILE_PROTEIN_GO_NAME,
+                FEATURE_FILE_DISEASE_CUI2VEC_NAME,
+            ]
+            feature_node_type_list = [DRUG, DRUG, DRUG, PROTEIN, PROTEIN, CONDITION]    
+
+        else:
+            raise Exception("Please select one of the following feature types: 'full', 'random'.")
 
     return feature_file_list, feature_name_list, feature_node_type_list
 

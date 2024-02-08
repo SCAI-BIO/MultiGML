@@ -4,7 +4,6 @@
 
 import os
 import logging
-from tkinter import NONE
 from typing import Tuple, Dict, List
 
 import dgl

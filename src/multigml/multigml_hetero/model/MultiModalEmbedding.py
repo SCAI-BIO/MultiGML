@@ -123,7 +123,7 @@ class MultiModalEmbeddingLayer(nn.Module):
                     tmp_modality_name: th.nn.Sequential(
                         layer_1,
                         dropout_layer,
-                        instance_normalization_layer,
+                        # instance_normalization_layer,
                         self.activation
                     )
                 }

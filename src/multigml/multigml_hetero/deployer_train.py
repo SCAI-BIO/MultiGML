@@ -288,8 +288,6 @@ def run_multigml(
     if th.cuda.is_available():
         datamodule.heterograph.g = datamodule.heterograph.g.to(device)
 
-    mlflow_hostname = get_hostname()
-
     slurm_job_id = get_slurm_job_id()
 
     mlflow_logger = pl.loggers.MLFlowLogger(

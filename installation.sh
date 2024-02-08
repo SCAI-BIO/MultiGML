@@ -1,9 +1,11 @@
-# Install pytorch with your CUDA version
-conda install pytorch torchvision torchaudio pytorch-cuda=11.3 -c pytorch 
+#!/bin/bash
+# Script for installation of environment
 
-# Install DGL with your CUDA version
-conda install -c dglteam dgl-cuda11.3
-
-# After moving into main folder:
-cd mavo
+# Create environment
+conda create --name env_multigml python=3.8
+# Activate environment
+conda activate env_multigml
+# Install requirements
+pip install -r requirements.txt
+# Install the source repository
 python3 -m pip install -e .

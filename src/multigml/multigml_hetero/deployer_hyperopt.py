@@ -237,7 +237,7 @@ def run_bayesian_hyperopt(
                 epsilon = trial.suggest_float("epsilon", low=1e-8, high=1e-6)
 
                 # multimodal case
-                if which_features in ['full', 'reduced', 'variance_selection']:
+                if which_features in ['full', 'reduced', 'variance_selection'] or which_graph == 'custom':
 
                     drug_modality_key = trial.suggest_categorical('drug_modality', choices=list(modality_combinations['drug'].keys()))
                     protein_modality_key = trial.suggest_categorical('protein_modality', choices=list(modality_combinations['protein'].keys()))
@@ -334,8 +334,6 @@ def run_bayesian_hyperopt(
                     datamodule.heterograph.g = datamodule.heterograph.g.to(device)
 
                 pl.seed_everything(seed=42)
-
-                mlflow_hostname = get_hostname()
 
                 slurm_job_id = get_slurm_job_id()
                 

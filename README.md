@@ -105,12 +105,20 @@ The following files are listed in the [features](data/features/full_features/) d
     $ python -m multigml linkpredict run-opt --which_graph='complete' --n_trials=1 --use_cuda=False --n_epochs=30 --pruner='hyperband' --max_resource=30 --min_resource=1 --reduction_factor=4 --evaluate_every=1 --n_splits=1 --data_set_split='<repository_path>/multigml/data/data_set_split/extended_trimmed_kg' --eval_edge_type='side-effect' --eval_edge_type_inv='side-effect_inverse' --which_features='full' --average='weighted' --calculate_etype_metrics=False --mlflow_experiment_name='<mlflow_experiment_name>' --optuna_study_name='<optuna_study_name>' --use_attention=False 
     ```
 
+    Note: For using a custom graph, please set `--which_graph='custom'`. You will need to specify the graph file path via `--graph_path='your/custom/path` and the node features to use via providing the folder with node features path in the argument `--which_features='your/node/feature/folder/path`. We here assume the same type of node features as listed above, so please make sure the file names correspond. You can use the argument `--create_split=True` to do a stratified train val test split and if you want to repeat your experiment, you can use the folder path that the splits were saved to next time in the argument `--data_set_split=/your/data/set/split`
+
+    Example:
+    
+    ```
+    $ python -m multigml linkpredict run-opt --which_graph='custom' --graph_path='your/custom/graph/path' --n_trials=1 --use_cuda=False --n_epochs=30 --pruner='hyperband' --max_resource=30 --min_resource=1 --reduction_factor=4 --evaluate_every=1 --n_splits=1  --eval_edge_type='side-effect' --eval_edge_type_inv='side-effect_inverse' --which_features='your/custom/feature/folder/' --average='weighted' --calculate_etype_metrics=False --mlflow_experiment_name='<mlflow_experiment_name>' --optuna_study_name='<optuna_study_name>' --use_attention=False  --create_split=True
+    ```
+
 2. **Training**
 
     The following command trains the model with the best hyperparameters and does link prediction. Set the argument --use_attention=False for using the MultiGML-RGCN variant, set it to True for using the MultiGML-RGAT variant. Set the --which_features argument to 'full' for using the multimodal features, set it to 'random' for using the basic features.
 
     ```
-    $ python -m multigml linkpredict run --which_graph='complete' --use_cuda=False --n_epochs=100 --evaluate_every=1 --n_splits=1 --data_set_split='<repository_path>/multigml/data/data_set_split/extended_trimmed_kg' --eval_edge_type='side-effect' --eval_edge_type_inv='side-effect_inverse' --which_features='full' --average='weighted' --calculate_etype_metrics=True --best_params='<best_params_path>' --mlflow_experiment_name='<mlflow_name>' --test_run=True --use_attention=False
+    $ python -m multigml linkpredict run --which_graph='complete' --use_cuda=False --n_epochs=100 --evaluate_every=1 --n_splits=1 --data_set_split='<repository_path>/MultiGML/data/data_set_split/extended_trimmed_kg' --eval_edge_type='side-effect' --eval_edge_type_inv='side-effect_inverse' --which_features='full' --average='weighted' --calculate_etype_metrics=True --best_params='<best_params_path>' --mlflow_experiment_name='<mlflow_name>' --test_run=True --use_attention=False
 
     ```
 
@@ -119,28 +127,50 @@ The following files are listed in the [features](data/features/full_features/) d
     Use the following command to test your pretrained model. Set the argument --use_attention=False for using the MultiGML-RGCN variant, set it to True for using the MultiGML-RGAT variant. Set the --which_features argument to 'full' for using the multimodal features, set it to 'random' for using the basic features.
 
     ```
-    $ python -m multigml linkpredict run --which_graph='complete' --neg_sample_size=1 --use_cuda=False --batch_size=100 --n_epochs=100  --evaluate_every=1 --n_splits=1 --data_set_split='<repository_path>/multigml/data/data_set_split/extended_trimmed_kg' --verbose=False --eval_edge_type='side-effect' --eval_edge_type_inv='side-effect_inverse' --which_features='full' --average='weighted' --calculate_etype_metrics=True --best_params='<best_params_path>' --mlflow_experiment_name='<mlflow_name>' --test_only_eval_etype=False --test_run=True --use_attention=False --pretrained_model='<pretrained_model_path>'
+    $ python -m multigml linkpredict run --which_graph='complete' --neg_sample_size=1 --use_cuda=False --batch_size=100 --n_epochs=100  --evaluate_every=1 --n_splits=1 --data_set_split='<repository_path>/MultiGML/data/data_set_split/extended_trimmed_kg' --eval_edge_type='side-effect' --eval_edge_type_inv='side-effect_inverse' --which_features='full' --average='weighted' --calculate_etype_metrics=True --best_params='<best_params_path>' --mlflow_experiment_name='<mlflow_name>' --test_only_eval_etype=False --test_run=True --use_attention=False --pretrained_model='<pretrained_model_path>'
    ```
 
+## Custom Use Case
+
+If you have a custom data set of a knowledge graph that is tailored to a specific research question, it is possible to employ the workflow of MultiGML to your use case by A) Generating the node features for your knowledge graph and B) analysing the post-hoc explainability of your predictions. We therefore provide a software license distributed via [scapos](https://www.scapos.de/portfolio/). Please contact their team for more information on the license.
+
+### Node Feature Generation
+
+You will be able to create the following features:
+
+- [Drugs](#drugs)
+    - **Gene expression fingerprint**: We use a molecular transcriptomics signature that represents the effect of a drug on biological processes in a defined system of a cell culture experiment. This signature is created for each drug, measuring the gene expression fold change of selected transcripts. We chose the LINCS L1000 dataset to annotate the drugs with gene expression profile information.  
+    - **Morphological fingerprint**: The effects of a drug perturbation in a cell culture experiment can not only be seen in the gene expression fold change, but also in the change in morphology of the treated cells. Therefore, we additionally annotate the drug with the Cell Painting morphological profiling assay information from the LINCS Data Portal (LDG-1192: LDS-1195).
+    - **Molecular fingerprint**: The molecular structure of the drugs was also taken into account by generating the molecular fingerprints. We here took the Morgan count fingerprint with a radius = 2, generated with the RDKit.
+- [Proteins](#proteins)
+    - **Sequence embeddings**: We used structural information of proteins in form of protein sequence embeddings. We generated the embeddings for each protein with the ESM-1b Transformer, a recently published pre-trained deep learning model for protein sequences.
+    - **Gene Ontology fingerprints**: We generated a binary Gene Ontology (GO) fingerprint for biological processes for each protein using data from the Gene Ontology Resource. A total of 12,226 human GO terms of Biological Processes were retrieved and their respective parent terms obtained. This resulted in a 1298 dimensional binary fingerprint for each protein, with each index either set to 1, if the protein was annotated with the respective GO term or 0 if not.
+- [Phenotypes](#phenotypes)
+    - **Medical concept embeddings**: Pre-trained embeddings of clinical concepts were used to annotate phenotypes including ADEs and indications. The so-called cui2vec embeddings were generated on the basis of clinical notes, insurance claims, and biomedical full text articles for each clinical concept. Briefly, the authors mapped ICD-9 codes in claims data to UMLS concepts and then counted co-occurrence of concept pairs. After decomposing the co-occurrence matrix via singular value decomposition, they used the popular word2vec approach to obtain concept embeddings in the Euclidean space. 
+
+### Explainability
+
+You will be able to explain your predictions post-hoc 
+- applying the **Integrated Gradients** method to explain the attributions of your input to the predicitons
+- analysing the **attention weights** from the MultiGML-RGAT model for the k-hop neighboring edges of your predictions of interest
 
 
 ## Issues
 If you have difficulties using MultiGML, please open an issue at our [GitHub](https://github.com/SCAI-BIO/MultiGML) repository.
 
-## Authors
-Sophia Krix*,1,2,3,+, Lauren Nicole DeLong*,1,4, Sumit Madan1,5, Daniel Domingo-Fernández1,3,6, Ashar Ahmad2,7, Sheraz Gul8,9, Andrea Zaliani8,9,  Holger Fröhlich1,2,+
+## Citation
 
-1 Department of Bioinformatics, Fraunhofer Institute for Algorithms and Scientific Computing (SCAI), Schloss Birlinghoven, 53757 Sankt Augustin, Germany
-2 Bonn-Aachen International Center for Information Technology (B-IT), University of Bonn, 53115 Bonn, Germany
-3 Fraunhofer Center for Machine Learning, Germany
-4 Artificial Intelligence and its Applications Institute, School of Informatics, University of Edinburgh, 10 Crichton Street, EH8 9AB, UK
-5 Department of Computer Science, University of Bonn, 53115 Bonn, Germany
-6 Enveda Biosciences, Boulder, CO 80301, USA
-7 Grünenthal GmbH, 52099 Aachen, Germany
-8 Fraunhofer Institute for Translational Medicine and Pharmacology ITMP, Schnackenburgallee 114, 22525 Hamburg, Germany
-9  Fraunhofer Cluster of Excellence for Immune-Mediated Diseases CIMD, Schnackenburgallee 114, 22525 Hamburg, Germany
-* Shared first-authorship
-+ Corresponding authors: sophia.krix@scai.fraunhofer.de, holger.froehlich@scai.fraunhofer.de
+When using this repository, please cite the following [publication](https://doi.org/10.1016/j.heliyon.2023.e19441):
+
+@article{krix2023multigml,
+  title={MultiGML: multimodal graph machine learning for prediction of adverse drug events},
+  author={Krix, Sophia and DeLong, Lauren Nicole and Madan, Sumit and Domingo-Fern{\'a}ndez, Daniel and Ahmad, Ashar and Gul, Sheraz and Zaliani, Andrea and Fr{\"o}hlich, Holger},
+  journal={Heliyon},
+  volume={9},
+  number={9},
+  year={2023},
+  publisher={Elsevier}
+}
 
 ## Disclaimer
 MultiGML is a scientific software that has been developed in an academic capacity, and thus comes with no warranty or guarantee of maintenance, support, or back-up of data.

@@ -20,28 +20,6 @@ def configure():
     logging.basicConfig(level=logging.INFO)
     make_results_dir()
 
-
-def get_hostname():
-    if socket.gethostname().endswith("localdomain"):
-        home_base_dir = '/home/skrix/Documents/multigml_docs/trained_models'
-        BASE_DATA_DIR = home_base_dir + "/data"
-        mlflow_hostname = 'localhost'
-    elif platform.system() == "Linux" and (
-            socket.gethostname().startswith("l") or socket.gethostname().startswith("d")):
-        home_base_dir = '/home/skrix/Documents/multigml_docs/trained_models'
-        BASE_DATA_DIR = home_base_dir + "/data"
-        # IP von leo1: "leo1.leo.scai.fraunhofer.de"
-        mlflow_hostname = "10.118.41.21"
-    elif platform.system() == 'Darwin':
-        home_base_dir = '/home/skrix/Documents/multigml_docs/trained_models'
-        mlflow_hostname = 'localhost'
-    else:
-        raise Exception('No correct hostname found for the mlflow logger. \n Platform: {} \n Hostname: {}'.format(
-            platform.system(), socket.gethostname()
-        ))
-        logging.info("MLFLOW Hostname: {}".format(mlflow_hostname))
-    return mlflow_hostname
-
 def get_slurm_job_id():
     
     if "SLURM_ARRAY_JOB_ID" in os.environ:

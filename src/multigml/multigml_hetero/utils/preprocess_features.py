@@ -77,7 +77,7 @@ def process_feature_matrix(
     nodes_with_features = set(feature_df.index)
 
     # Nodes (string labels) without features
-    nodes_without_features = nodes.difference(nodes_with_features)
+    nodes_without_features = list(nodes.difference(nodes_with_features))
 
     # in case of duplicates in the df (lincs cyt profiling because of Broad CPD ID to Drugbank Mapping) drop the duplicates
     if len(nodes_with_features) != feature_df.shape[0]:
