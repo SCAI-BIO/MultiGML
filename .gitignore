@@ -145,3 +145,5 @@ venv.bak/
 *.bcf
 
 
+data/data_set_split/extended_trimmed_kg/*.pkl
+data/features/full_features/*.tsv

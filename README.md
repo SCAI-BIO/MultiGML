@@ -93,6 +93,8 @@ The following files are listed in the [features](data/features/full_features/) d
 * [protein_go_fingerprint.tsv](data/features/full_features/protein_go_fingerprint.tsv): gene ontology fingerprint for proteins
 
 
+The data files are zipped in the data folder because of large file sizes, so please unzip them before using MultiGML.
+
 ## Usage
 **Note:** These are very basic commands for MultiGML, and the detailed options for each command can be found in the documentation.
 
